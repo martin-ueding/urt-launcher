@@ -20,7 +20,7 @@ set_dl_url() {
 set_resolution() {
 	cd "$HOME/.q3a/q3ut4"
 	mv q3config.cfg q3config.tmp
-	grep -vP '^seta r_custom(?:width|height)' g3config.tmp > q3config.cfg
+	grep -vP '^seta r_custom(?:width|height)' q3config.tmp > q3config.cfg
 	echo "seta r_customwidth \"$1\"" >> q3config.cfg
 	echo "seta r_customheight \"$2\"" >> q3config.cfg
 }
