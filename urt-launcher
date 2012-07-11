@@ -16,6 +16,14 @@ case "$1" in
 	12)
 		ln -s q3config-12.cfg q3config.cfg
 		;;
+	*)
+		exit 1
 esac
+
+# Find the current IP address for the map download.
+ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet Adresse:([\d\.]+)')
+ip=${ifconfig#inet Adresse:}
+
+echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
 
 /opt/UrbanTerror/ioUrbanTerror.x86_64
