@@ -16,19 +16,26 @@ set_dl_url() {
 	echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
 }
 
+set_resolution() {
+	mv q3config.cfg q3config.bak
+	grep -vP '^seta r_custom(?:width|height)' g3config.bak > q3config.cfg
+	echo "seta r_customwidth \"$1\"" >> q3config.cfg
+	echo "seta r_customheight \"$2\"" >> q3config.cfg
+}
+
 cd "$HOME/.q3a/q3ut4"
 
 rm -f q3config.cfg
 
 if xrandr | grep -P 'HDMI\d? connected'
 then
-	ln -s q3config-24.cfg q3config.cfg
+	set_resolution 1920 1200
 	set_dl_url
 	xrandr --output "$internal" --off
 	"$urt"
 	think-dock on
 else
-	ln -s q3config-12.cfg q3config.cfg
+	set_resolution 1366 768
 	set_dl_url
 	"$urt"
 fi
