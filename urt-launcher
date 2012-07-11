@@ -16,5 +16,6 @@ case "$1" in
 	12)
 		ln -s q3config-12.cfg q3config.cfg
 		;;
+esac
 
 /opt/UrbanTerror/ioUrbanTerror.x86_64
