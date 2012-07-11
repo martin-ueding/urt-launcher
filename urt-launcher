@@ -5,6 +5,16 @@ set -e
 set -u
 set -x
 
+set_dl_url() {
+	# Find the current IP address for the map download.
+	ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet Adresse:([\d\.]+)')
+	ip=${ifconfig#inet Adresse:}
+
+	echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
+}
+
+urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
+
 cd "$HOME/.q3a/q3ut4"
 
 rm -f q3config.cfg
@@ -12,18 +22,16 @@ rm -f q3config.cfg
 case "$1" in
 	24)
 		ln -s q3config-24.cfg q3config.cfg
+		set_dl_url
+		xrandr --output "$internal" --off
+		"$urt"
+		xrandr --output "$internal" --auto
 		;;
 	12)
 		ln -s q3config-12.cfg q3config.cfg
+		set_dl_url
+		"$urt"
 		;;
 	*)
 		exit 1
 esac
-
-# Find the current IP address for the map download.
-ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet Adresse:([\d\.]+)')
-ip=${ifconfig#inet Adresse:}
-
-echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
-
-/opt/UrbanTerror/ioUrbanTerror.x86_64
