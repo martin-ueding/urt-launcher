@@ -9,6 +9,7 @@ internal="LVDS1"
 urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
 
 set_dl_url() {
+	cd "$HOME/.q3a/q3ut4"
 	# Find the current IP address for the map download.
 	ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet Adresse:([\d\.]+)')
 	ip=${ifconfig#inet Adresse:}
@@ -17,15 +18,12 @@ set_dl_url() {
 }
 
 set_resolution() {
-	mv q3config.cfg q3config.bak
-	grep -vP '^seta r_custom(?:width|height)' g3config.bak > q3config.cfg
+	cd "$HOME/.q3a/q3ut4"
+	mv q3config.cfg q3config.tmp
+	grep -vP '^seta r_custom(?:width|height)' g3config.tmp > q3config.cfg
 	echo "seta r_customwidth \"$1\"" >> q3config.cfg
 	echo "seta r_customheight \"$2\"" >> q3config.cfg
 }
-
-cd "$HOME/.q3a/q3ut4"
-
-rm -f q3config.cfg
 
 if xrandr | grep -P 'HDMI\d? connected'
 then
