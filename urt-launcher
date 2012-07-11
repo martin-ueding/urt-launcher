@@ -5,6 +5,9 @@ set -e
 set -u
 set -x
 
+internal="LVDS1"
+urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
+
 set_dl_url() {
 	# Find the current IP address for the map download.
 	ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet Adresse:([\d\.]+)')
@@ -12,8 +15,6 @@ set_dl_url() {
 
 	echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
 }
-
-urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
 
 cd "$HOME/.q3a/q3ut4"
 
