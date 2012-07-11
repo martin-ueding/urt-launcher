@@ -20,19 +20,15 @@ cd "$HOME/.q3a/q3ut4"
 
 rm -f q3config.cfg
 
-case "$1" in
-	24)
-		ln -s q3config-24.cfg q3config.cfg
-		set_dl_url
-		xrandr --output "$internal" --off
-		"$urt"
-		xrandr --output "$internal" --auto
-		;;
-	12)
-		ln -s q3config-12.cfg q3config.cfg
-		set_dl_url
-		"$urt"
-		;;
-	*)
-		exit 1
-esac
+if xrandr | grep -P 'HDMI\d? connected'
+then
+	ln -s q3config-24.cfg q3config.cfg
+	set_dl_url
+	xrandr --output "$internal" --off
+	"$urt"
+	think-dock on
+else
+	ln -s q3config-12.cfg q3config.cfg
+	set_dl_url
+	"$urt"
+fi
