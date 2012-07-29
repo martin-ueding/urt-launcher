@@ -1,0 +1,16 @@
+.. Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
+
+#########
+CHANGELOG
+#########
+
+v1.1
+    - Change Gamma.
+
+v1.0.1
+    - Add GPLv2+ header.
+
+v1.0
+    Initial release.
+
+.. vim: ft=rst
