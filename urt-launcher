@@ -38,6 +38,12 @@ set_resolution() {
 	echo "seta r_customheight \"$2\"" >> q3config.cfg
 }
 
+cleanup() {
+	xgamma -gamma 1.0
+}
+
+trap cleanup EXIT
+
 if xrandr | grep -P 'HDMI\d? connected'
 then
 	set_resolution 1920 1200
@@ -46,6 +52,7 @@ then
 	"$urt"
 	think-dock on
 else
+	xgamma -gamma 1.4
 	set_resolution 1366 768
 	set_dl_url
 	"$urt"
