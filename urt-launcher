@@ -16,10 +16,28 @@
 
 set -e
 set -u
-set -x
 
 internal="LVDS1"
-urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
+
+regex_Beretta="(.*) was pistol whipped by (.*)."
+regex_Bleeding="(.*) bled to death from (.*)'s attacks."
+regex_DE="(.*) got a whole lot of hole from (.*)'s DE round."
+regex_G36="(.*) was on the wrong end of (.*)'s G36.*"
+regex_HE="(.*) has become a nasty stain thanks to (.*)'s HE gren."
+regex_HK107="(.*) was torn asunder by (.*)'s crass AK103."
+regex_K69="(.*) HEARD (.*)'s HK69 gren... didn't AVOID it. Sucka."
+regex_Knive="(.*) was sliced a new orifice by (.*)."
+regex_LR300="(.*) played 'catch the shiny bullet' with (.*)'s LR-300 rounds."
+regex_M4="(.*) got a lead enema from (.*)'s retro M4."
+regex_MP5K="(.*) was MP5K spammed without mercy by (.*)."
+regex_negev="(.*) got shredded to pieces by (.*)'s Negev."
+regex_SG1="(.*) was taken out by (.*)'s PSG1. Plink!."
+regex_SPAS="(.*) was turned into peppered steak by (.*)'s SPAS blast."
+regex_SR8="(.*) managed to slow down (.*)'s SR-8 round just a little."
+regex_UMP="(.*) danced the UMP tango to (.*)'s sweet sweet music."
+
+regex_hit_out="You hit (.*) in the (.*)."
+regex_hit_in="You were hit in the (.*)."
 
 set_dl_url() {
 	cd "$HOME/.q3a/q3ut4"
@@ -44,16 +62,71 @@ cleanup() {
 
 trap cleanup EXIT
 
+playsound() {
+	mplayer "$1" &> /dev/null &
+}
+
+starturt() {
+	local urt="/opt/UrbanTerror/ioUrbanTerror.x86_64 +set ttycon 1"
+
+	myname="$(grep 'seta name "\(.*\)"' /home/mu/.q3a/q3ut4/q3config.cfg | sed 's/seta name "\(.*\)"/\1/')"
+
+	local tempdir="$(mktemp -d)"
+
+	input="$tempdir/input"
+	output="$tempdir/output"
+
+	mkfifo "$input"
+	mkfifo "$output"
+
+	$urt < "$input" &> "$output" &
+
+	echo "void" > "$input"
+
+	while read line
+	do
+		echo "-> $line"
+
+		echo "-> $line" >> run.log
+
+		if [[ "$line" =~ $regex_HE ]]
+		then
+			event_kill "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "HE"
+		elif [[ "$line" =~ $regex_M4 ]]
+		then
+			event_kill "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "M4"
+		fi
+	done < "$output"
+}
+
+event_kill() {
+	from="$1"
+	to="$2"
+	weapon="$3"
+
+	echo "Kill, $1, $2, $3."
+
+	if [[ "$2" = "$myname" ]]
+	then
+
+		if [[ "$weapon" = "HE" ]]
+		then
+			echo "say There was a nade, $1." > "$input"
+			playsound ~/Musik/Klingeltoene/miscom.mp3
+		fi
+	fi
+}
+
 if xrandr | grep -P 'HDMI\d? connected'
 then
 	set_resolution 1920 1200
 	set_dl_url
 	xrandr --output "$internal" --off
-	"$urt"
-	think-dock on
+	starturt
+	#think-dock on
 else
 	xgamma -gamma 1.4
 	set_resolution 1366 768
 	set_dl_url
-	"$urt"
+	starturt
 fi
