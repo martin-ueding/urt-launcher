@@ -19,25 +19,25 @@ set -u
 
 internal="LVDS1"
 
-regex_Beretta="(.*) was pistol whipped by (.*)."
-regex_Bleeding="(.*) bled to death from (.*)'s attacks."
-regex_DE="(.*) got a whole lot of hole from (.*)'s DE round."
-regex_G36="(.*) was on the wrong end of (.*)'s G36.*"
-regex_HE="(.*) has become a nasty stain thanks to (.*)'s HE gren."
-regex_HK107="(.*) was torn asunder by (.*)'s crass AK103."
-regex_K69="(.*) HEARD (.*)'s HK69 gren... didn't AVOID it. Sucka."
-regex_Knive="(.*) was sliced a new orifice by (.*)."
-regex_LR300="(.*) played 'catch the shiny bullet' with (.*)'s LR-300 rounds."
-regex_M4="(.*) got a lead enema from (.*)'s retro M4."
-regex_MP5K="(.*) was MP5K spammed without mercy by (.*)."
+regex_beretta="(.*) was pistol whipped by (.*)."
+regex_bleeding="(.*) bled to death from (.*)'s attacks."
+regex_de="(.*) got a whole lot of hole from (.*)'s DE round."
+regex_g36="(.*) was on the wrong end of (.*)'s G36.*"
+regex_he="(.*) has become a nasty stain thanks to (.*)'s HE gren."
+regex_hk107="(.*) was torn asunder by (.*)'s crass AK103."
+regex_k69="(.*) HEARD (.*)'s HK69 gren... didn't AVOID it. Sucka."
+regex_knive="(.*) was sliced a new orifice by (.*)."
+regex_lr300="(.*) played 'catch the shiny bullet' with (.*)'s LR-300 rounds."
+regex_m4="(.*) got a lead enema from (.*)'s retro M4."
+regex_mp5k="(.*) was MP5K spammed without mercy by (.*)."
 regex_negev="(.*) got shredded to pieces by (.*)'s Negev."
-regex_SG1="(.*) was taken out by (.*)'s PSG1. Plink!."
-regex_SPAS="(.*) was turned into peppered steak by (.*)'s SPAS blast."
-regex_SR8="(.*) managed to slow down (.*)'s SR-8 round just a little."
-regex_UMP="(.*) danced the UMP tango to (.*)'s sweet sweet music."
+regex_psg1="(.*) was taken out by (.*)'s PSG1. Plink!."
+regex_spas="(.*) was turned into peppered steak by (.*)'s SPAS blast."
+regex_sr8="(.*) managed to slow down (.*)'s SR-8 round just a little."
+regex_ump="(.*) danced the UMP tango to (.*)'s sweet sweet music."
 
-regex_hit_out="You hit (.*) in the (.*)."
-regex_hit_in="You were hit in the (.*)."
+regex_hit_out="You hit (.*) in the (.*) for (\d+). damage."
+regex_hit_in="You were hit in the (.*) by (.*) for (\d+). damage."
 
 set_dl_url() {
 	cd "$HOME/.q3a/q3ut4"
@@ -89,12 +89,22 @@ starturt() {
 
 		echo "-> $line" >> run.log
 
-		if [[ "$line" =~ $regex_HE ]]
+		if [[ "$line" =~ $regex_he ]]
 		then
 			event_kill "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "HE"
-		elif [[ "$line" =~ $regex_M4 ]]
+
+		elif [[ "$line" =~ $regex_m4 ]]
 		then
 			event_kill "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "M4"
+
+		elif [[ "$line" =~ $regex_hit_in ]]
+		then
+			event_hit_in "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+
+		elif [[ "$line" =~ $regex_hit_out ]]
+		then
+			event_hit_out "${BASH_REMATCH[2]}" "${BASH_REMATCH[1]}" "${BASH_REMATCH[3]}"
+
 		fi
 	done < "$output"
 }
@@ -115,6 +125,22 @@ event_kill() {
 			playsound ~/Musik/Klingeltoene/miscom.mp3
 		fi
 	fi
+}
+
+event_hit_in() {
+	damage="$3"
+	where="$1"
+	from="$2"
+
+	echo "Hit in, $where, $from, $damage"
+}
+
+event_hit_out() {
+	damage="$3"
+	to="$2"
+	where="$1"
+
+	echo "Hit out, $where, $to, $damage"
 }
 
 if xrandr | grep -P 'HDMI\d? connected'
