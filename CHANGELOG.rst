@@ -1,8 +1,11 @@
-.. Copyright © 2012 Martin Ueding <dev@martin-ueding.de>
+.. Copyright © 2012-2013 Martin Ueding <dev@martin-ueding.de>
 
 #########
-CHANGELOG
+Changelog
 #########
+
+v1.1.1
+    - Fix ``grep``
 
 v1.1
     - Change Gamma.
@@ -12,5 +15,3 @@ v1.0.1
 
 v1.0
     Initial release.
-
-.. vim: ft=rst
