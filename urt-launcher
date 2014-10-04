@@ -1,46 +1,46 @@
 #!/bin/bash
-# Copyright © 2012-2013 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2012-2014 Martin Ueding <dev@martin-ueding.de>
 
 set -e
 set -u
 set -x
 
 internal="LVDS1"
-urt="/opt/UrbanTerror/ioUrbanTerror.x86_64"
+urt="/opt/UrbanTerror42/Quake3-UrT.x86_64"
 
 set_dl_url() {
-	cd "$HOME/.q3a/q3ut4"
-	# Find the current IP address for the map download.
-	ifconfig=$(ifconfig | grep -v 127.0.0.1 | grep -oP 'inet addr:([\d\.]+)' | grep -oP '([\d\.]+)')
-	ip=${ifconfig#inet Adresse:}
+    cd "$HOME/.q3a/q3ut4"
+    # Find the current IP address for the map download.
+    ifconfig=$(LC_ALL=C ifconfig | grep -v 127.0.0.1 | grep -oP 'inet addr:([\d\.]+)' | grep -oP '([\d\.]+)')
+    ip=${ifconfig#inet Adresse:}
 
-	echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
+    echo 'sets sv_dlURL "'$ip'"' >> q3config.cfg
 }
 
 set_resolution() {
-	cd "$HOME/.q3a/q3ut4"
-	mv q3config.cfg q3config.tmp
-	grep -vP '^seta r_custom(?:width|height)' q3config.tmp > q3config.cfg
-	echo "seta r_customwidth \"$1\"" >> q3config.cfg
-	echo "seta r_customheight \"$2\"" >> q3config.cfg
+    cd "$HOME/.q3a/q3ut4"
+    mv q3config.cfg q3config.tmp
+    grep -vP '^seta r_custom(?:width|height)' q3config.tmp > q3config.cfg
+    echo "seta r_customwidth \"$1\"" >> q3config.cfg
+    echo "seta r_customheight \"$2\"" >> q3config.cfg
 }
 
 cleanup() {
-	xgamma -gamma 1.0
+    xgamma -gamma 1.0
 }
 
 trap cleanup EXIT
 
 if xrandr | grep -P 'HDMI\d? connected'
 then
-	set_resolution 1920 1200
-	set_dl_url
-	xrandr --output "$internal" --off
-	"$urt"
-	think-dock on
+    set_resolution 1920 1200
+    set_dl_url
+    xrandr --output "$internal" --off
+    "$urt"
+    think-dock on
 else
-	xgamma -gamma 1.4
-	set_resolution 1366 768
-	set_dl_url
-	"$urt"
+    xgamma -gamma 1.4
+    set_resolution 1366 768
+    set_dl_url
+    "$urt"
 fi
